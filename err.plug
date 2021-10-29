@@ -1,0 +1,9 @@
+[Core]
+Name = Trivia Game
+Module = trivia_game
+
+[Documentation]
+Description = Play a trivia game
+
+[Python]
+Version = 3
