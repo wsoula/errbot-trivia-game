@@ -14,7 +14,7 @@ class GuessFlows(BotFlow):
     def guess(self, flow: FlowRoot):
         """ This is a flow that can set a guessing game."""
         # setup Flow
-        game_created = flow.connect('trivia', auto_trigger=True)
+        game_created = flow.connect('trivia', auto_trigger=True, room_flow=True)
         one_guess = game_created.connect('guess')
         one_guess.connect(one_guess)  # loop on itself
         one_guess.connect(FLOW_END, predicate=lambda ctx: 'ended' in ctx)
