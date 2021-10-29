@@ -1,6 +1,6 @@
 [Core]
-Name = Trivia Flow
-Module = trivia_flow
+Name = Trivia Game Flow
+Module = trivia_game
 
 [Documentation]
 Description = Trivia game flow
