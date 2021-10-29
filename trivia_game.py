@@ -26,13 +26,18 @@ class TriviaGame(BotPlugin):
     def trivia(self, msg, args):
         """ Get trivia questions """
         logger.debug('msg=%s\nargs=%s', msg, args)
+        trivias = []
+        trivias.append({'question': 'blah', 'incorrect': ['boo', 'hoo'], 'correct': ['bin']})
+        msg.ctx['trivias'] = trivias
         return 'Questions Retrieved'
 
     @arg_botcmd('guess', type=str)
     def guess(self, msg, guess):
         """ Guess """
-        if guess == 'foo':
-            msg.ctx['ended'] = True
-            return 'You got it!'
-        else:
-            return guess+' was not it'
+        if 'trivias' in msg.ctx:
+            if guess == 'foo':
+                msg.ctx['ended'] = True
+                return 'You got it!'
+            else:
+                return guess+' was not it'
+        return 'Must initialize with trivia command first'
