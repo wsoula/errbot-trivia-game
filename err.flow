@@ -1,0 +1,9 @@
+[Core]
+Name = Trivia Flow
+Module = trivia_flow
+
+[Documentation]
+Description = Trivia game flow
+
+[Python]
+Version = 3
