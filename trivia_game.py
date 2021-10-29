@@ -23,9 +23,9 @@ class GuessFlows(BotFlow):
 class TriviaGame(BotPlugin):
     """ Trivia Game """
     @botcmd
-    def trivia(self, msg):
+    def trivia(self, msg, args):
         """ Get trivia questions """
-        logger.debug('msg=%s', msg)
+        logger.debug('msg=%s\nargs=%s', msg, args)
 
     @arg_botcmd('guess', type=str)
     def guess(self, msg, guess):
