@@ -17,7 +17,7 @@ class GuessFlows(BotFlow):
         """ This is a flow that can set a guessing game."""
         # setup Flow
         game_created = flow.connect('trivia', auto_trigger=True, room_flow=True)
-        question = game_created.connect('question')
+        question = game_created.connect('question', predicate=lambda ctx: 'trivias' in ctx)
         one_guess = question.connect('guess')
         one_guess.connect(one_guess)  # loop on itself
         one_guess.connect(FLOW_END, predicate=lambda ctx: 'ended' in ctx)
@@ -53,6 +53,7 @@ class TriviaGame(BotPlugin):
                 answers = answers + answer + '\n'
             answers = answers + msg.ctx['correct_answer']
             return msg.ctx['question']+'\n'+answers
+        logger.info('msg.ctx=%s', msg.ctx)
         return 'Must initialize with trivia command first'
 
     @arg_botcmd('guess', type=str)
@@ -64,4 +65,5 @@ class TriviaGame(BotPlugin):
                 return 'You got it!'
             else:
                 return guess+' was not it'
-        return 'Must initialize with trivia command and question command first'
+        logger.info('msg.ctx=%s', msg.ctx)
+        return 'Must initialize with trivia command and/or question command first'
