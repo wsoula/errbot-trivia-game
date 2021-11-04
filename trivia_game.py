@@ -61,9 +61,11 @@ class TriviaGame(BotPlugin):
             for answer in msg.ctx['incorrect_answers']:
                 answers = answers + answer + '\n'
             answers = answers + msg.ctx['correct_answer']
-            return 'Question '+str(msg.ctx['index'] + 1)+'\n'+msg.ctx['question']+'\n'+answers
+            yield 'Question '+str(msg.ctx['index'] + 1)+'\n'+msg.ctx['question']+'\n'+answers
+        else:
+            yield 'Must initialize with trivia command first'
         logger.info('questionmsg.ctx=%s', msg.ctx)
-        return 'Must initialize with trivia command first'
+        
 
     @arg_botcmd('guess', type=str)
     def guess(self, msg, guess):
@@ -73,10 +75,11 @@ class TriviaGame(BotPlugin):
             if guess == msg.ctx['correct_answer']:
                 msg.ctx['index'] = msg.ctx['index'] + 1
                 msg.ctx['correct'] = True
-                if msg.ctx['index'] == TOTAL_QUESTIONS:
+                if msg.ctx['index'] == TOTAL_QUESTIONS - 1:
                     msg.ctx['ended'] = True
-                return 'You got it!'
+                yield 'You got it!'
             else:
-                return guess+' was not it'
+                yield guess+' was not it'
+        else:
+            yield 'Must initialize with trivia command and/or question command first'
         logger.info('guessmsg.ctx=%s', msg.ctx)
-        return 'Must initialize with trivia command and/or question command first'
