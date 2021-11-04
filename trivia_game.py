@@ -25,7 +25,7 @@ class GuessFlows(BotFlow):
         # question.connect(question, predicate=lambda ctx: 'correct' in ctx)  # loop on question: ctx is {}
         one_guess = question.connect('guess')
         one_guess.connect(one_guess)  # loop on itself
-        one_guess.connect(question, predicate=lambda ctx: 'correct' in ctx)  # loop on question
+        one_guess.connect(question, predicate=lambda ctx: 'correct' in ctx and 'ended' not in ctx)  # loop on question
         one_guess.connect(FLOW_END, predicate=lambda ctx: 'ended' in ctx)
         game_created.hints = False
         question.hints = False
@@ -54,6 +54,8 @@ class TriviaGame(BotPlugin):
         logger.info('questionmsg.ctx=%s\nargs=%s', msg.ctx, args)
         if 'trivias' in msg.ctx:
             index = msg.ctx['index']
+            if index == TOTAL_QUESTIONS:
+                return 'No More Questions'
             msg.ctx['question'] = msg.ctx['trivias'][index]['question']
             msg.ctx['correct_answer'] = msg.ctx['trivias'][index]['correct_answer']
             msg.ctx['incorrect_answers'] = msg.ctx['trivias'][index]['incorrect_answers']
@@ -75,7 +77,7 @@ class TriviaGame(BotPlugin):
             if guess == msg.ctx['correct_answer']:
                 msg.ctx['index'] = msg.ctx['index'] + 1
                 msg.ctx['correct'] = True
-                if msg.ctx['index'] == TOTAL_QUESTIONS - 1:
+                if msg.ctx['index'] == TOTAL_QUESTIONS:
                     msg.ctx['ended'] = True
                 yield 'You got it!'
             else:
