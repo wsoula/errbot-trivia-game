@@ -24,8 +24,8 @@ class GuessFlows(BotFlow):
         question = game_created.connect('question')
         # question.connect(question, predicate=lambda ctx: 'correct' in ctx)  # loop on question: ctx is {}
         one_guess = question.connect('guess')
-        one_guess.connect(one_guess)  # loop on itself
-        one_guess.connect(question, predicate=lambda ctx: 'correct' in ctx and 'ended' not in ctx)  # loop on question
+        one_guess.connect(one_guess, predicate=lambda ctx: ctx['correct'] is False and 'ended' not in ctx)
+        one_guess.connect(question, predicate=lambda ctx: ctx['correct'] is True and 'ended' not in ctx)
         one_guess.connect(FLOW_END, predicate=lambda ctx: 'ended' in ctx)
         game_created.hints = False
         question.hints = False
@@ -46,6 +46,7 @@ class TriviaGame(BotPlugin):
             msg.ctx['trivias'] = response['results']
             msg.ctx['index'] = 0
             return 'Questions Retrieved'
+        logger.info('triviamsg.ctx=%s', msg.ctx)
         return 'No questions returned'
 
     @botcmd
@@ -53,6 +54,7 @@ class TriviaGame(BotPlugin):
         """ Get a question """
         logger.info('questionmsg.ctx=%s\nargs=%s', msg.ctx, args)
         if 'trivias' in msg.ctx:
+            msg.ctx['correct'] = False
             index = msg.ctx['index']
             if index == TOTAL_QUESTIONS:
                 return 'No More Questions'
@@ -67,7 +69,6 @@ class TriviaGame(BotPlugin):
         else:
             yield 'Must initialize with trivia command first'
         logger.info('questionmsg.ctx=%s', msg.ctx)
-        
 
     @arg_botcmd('guess', type=str)
     def guess(self, msg, guess):
