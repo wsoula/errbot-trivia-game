@@ -45,11 +45,13 @@ class TriviaGame(BotPlugin):
         if 'results' in response:
             msg.ctx['trivias'] = response['results']
             msg.ctx['index'] = 0
-            return 'Questions Retrieved'
         logger.info('triviamsg.ctx=%s', msg.ctx)
-        return 'No questions returned'
+        if 'results' not in response:
+            yield 'No questions returned'
+        else:
+            yield 'Questions Retrieved'
 
-    @botcmd
+    @botcmd()
     def question(self, msg, args):
         """ Get a question """
         logger.info('questionmsg.ctx=%s\nargs=%s', msg.ctx, args)
@@ -57,32 +59,33 @@ class TriviaGame(BotPlugin):
             msg.ctx['correct'] = False
             index = msg.ctx['index']
             if index == TOTAL_QUESTIONS:
-                return 'No More Questions'
-            msg.ctx['question'] = msg.ctx['trivias'][index]['question']
-            msg.ctx['correct_answer'] = msg.ctx['trivias'][index]['correct_answer']
-            msg.ctx['incorrect_answers'] = msg.ctx['trivias'][index]['incorrect_answers']
-            answers = ''
-            for answer in msg.ctx['incorrect_answers']:
-                answers = answers + answer + '\n'
-            answers = answers + msg.ctx['correct_answer']
-            yield 'Question '+str(msg.ctx['index'] + 1)+'\n'+msg.ctx['question']+'\n'+answers
+                yield 'No More Questions'
+            else:
+                msg.ctx['question'] = msg.ctx['trivias'][index]['question']
+                msg.ctx['correct_answer'] = msg.ctx['trivias'][index]['correct_answer']
+                msg.ctx['incorrect_answers'] = msg.ctx['trivias'][index]['incorrect_answers']
+                answers = ''
+                for answer in msg.ctx['incorrect_answers']:
+                    answers = answers + answer + '\n'
+                answers = answers + msg.ctx['correct_answer']
+                yield 'Question '+str(msg.ctx['index'] + 1)+'\n'+msg.ctx['question']+'\n'+answers
         else:
             yield 'Must initialize with trivia command first'
         logger.info('questionmsg.ctx=%s', msg.ctx)
 
-    @arg_botcmd('guess', type=str)
-    def guess(self, msg, guess):
+    @botcmd()
+    def guess(self, msg, args):
         """ Guess """
-        logger.info('guessmsg.ctx=%s\nguess=%s', msg.ctx, guess)
+        logger.info('guessmsg.ctx=%s\nguess=%s', msg.ctx, args)
         if 'trivias' in msg.ctx and 'correct_answer' in msg.ctx:
-            if guess == msg.ctx['correct_answer']:
+            if args == msg.ctx['correct_answer']:
                 msg.ctx['index'] = msg.ctx['index'] + 1
                 msg.ctx['correct'] = True
                 if msg.ctx['index'] == TOTAL_QUESTIONS:
                     msg.ctx['ended'] = True
                 yield 'You got it!'
             else:
-                yield guess+' was not it'
+                yield args+' was not it'
         else:
             yield 'Must initialize with trivia command and/or question command first'
         logger.info('guessmsg.ctx=%s', msg.ctx)
