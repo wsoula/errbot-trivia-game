@@ -24,7 +24,8 @@ class GuessFlows(BotFlow):
         question = game_created.connect('question')
         # question.connect(question, predicate=lambda ctx: 'correct' in ctx)  # loop on question: ctx is {}
         one_guess = question.connect('guess')
-        one_guess.connect(one_guess, predicate=lambda ctx: ctx['correct'] is False and 'ended' not in ctx)
+        # Don't connect guess back to itself, what is the next guess???
+        # one_guess.connect(one_guess, predicate=lambda ctx: ctx['correct'] is False and 'ended' not in ctx)
         one_guess.connect(question, predicate=lambda ctx: ctx['correct'] is True and 'ended' not in ctx)
         one_guess.connect(FLOW_END, predicate=lambda ctx: 'ended' in ctx)
         game_created.hints = False
