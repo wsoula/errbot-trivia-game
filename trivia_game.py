@@ -21,7 +21,7 @@ class GuessFlows(BotFlow):
         game_created = flow.connect('trivia', auto_trigger=True, room_flow=True)
         # game_created = flow.connect('trivia', auto_trigger=False, room_flow=False)
         # question = game_created.connect('question', predicate=lambda ctx: 'trivias' in ctx) # ctx is {}
-        question = game_created.connect('question', predicate=lambda ctx: 'trivias' in ctx)
+        question = game_created.connect('question')
         # question.connect(question, predicate=lambda ctx: 'correct' in ctx)  # loop on question: ctx is {}
         one_guess = question.connect('guess')
         one_guess.connect(one_guess, predicate=lambda ctx: ctx['correct'] is False and 'ended' not in ctx)
