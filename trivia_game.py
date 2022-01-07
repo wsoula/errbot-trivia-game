@@ -37,15 +37,15 @@ class TriviaGame(BotPlugin):
     @botcmd
     def trivia(self, msg, args):
         """ Get trivia questions """
-        logger.info('triviamsg.ctx=%s\nargs=%s', msg.ctx, args)
+        logger.info('trivia: msg.ctx=%s\nargs=%s', msg.ctx, args)
         url = 'https://opentdb.com/api.php?amount='+str(TOTAL_QUESTIONS)
         page = urllib.request.Request(url)
         response = json.loads(urllib.request.urlopen(page).read().decode('utf-8'))
-        logger.info('triviaresponse=%s', response)
+        logger.info('trivia: response=%s', response)
         if 'results' in response:
             msg.ctx['trivias'] = response['results']
             msg.ctx['index'] = 0
-        logger.info('triviamsg.ctx=%s', msg.ctx)
+        logger.info('trivia: msg.ctx=%s', msg.ctx)
         if 'results' not in response:
             yield 'No questions returned'
         else:
@@ -54,11 +54,11 @@ class TriviaGame(BotPlugin):
     @botcmd()
     def question(self, msg, args):
         """ Get a question """
-        logger.info('questionmsg.ctx=%s\nargs=%s', msg.ctx, args)
+        logger.info('question: msg.ctx=%s\nargs=%s', msg.ctx, args)
         if 'trivias' in msg.ctx:
             msg.ctx['correct'] = False
             index = msg.ctx['index']
-            if index == TOTAL_QUESTIONS:
+            if index + 1 == TOTAL_QUESTIONS:
                 yield 'No More Questions'
             else:
                 msg.ctx['question'] = msg.ctx['trivias'][index]['question']
@@ -68,15 +68,15 @@ class TriviaGame(BotPlugin):
                 for answer in msg.ctx['incorrect_answers']:
                     answers = answers + answer + '\n'
                 answers = answers + msg.ctx['correct_answer']
-                yield 'Question '+str(msg.ctx['index'] + 1)+'\n'+msg.ctx['question']+'\n'+answers
+                yield 'Question '+str(index + 1)+'\n'+msg.ctx['question']+'\n'+answers
         else:
             yield 'Must initialize with trivia command first'
-        logger.info('questionmsg.ctx=%s', msg.ctx)
+        logger.info('question: msg.ctx=%s', msg.ctx)
 
     @botcmd()
     def guess(self, msg, args):
         """ Guess """
-        logger.info('guessmsg.ctx=%s\nguess=%s', msg.ctx, args)
+        logger.info('guess: msg.ctx=%s\nguess=%s', msg.ctx, args)
         if 'trivias' in msg.ctx and 'correct_answer' in msg.ctx:
             if args == msg.ctx['correct_answer']:
                 msg.ctx['index'] = msg.ctx['index'] + 1
@@ -88,4 +88,4 @@ class TriviaGame(BotPlugin):
                 yield args+' was not it'
         else:
             yield 'Must initialize with trivia command and/or question command first'
-        logger.info('guessmsg.ctx=%s', msg.ctx)
+        logger.info('guess: msg.ctx=%s', msg.ctx)
