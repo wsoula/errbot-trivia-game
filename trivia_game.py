@@ -58,7 +58,8 @@ class TriviaGame(BotPlugin):
         """ Get a question """
         logger.info('question: msg.ctx=%s\nargs=%s', msg.ctx, args)
         if 'trivias' in msg.ctx:
-            del msg.ctx['correct']
+            if 'correct' in msg.ctx:
+                del msg.ctx['correct']
             index = msg.ctx['index']
             if index + 1 == TOTAL_QUESTIONS:
                 yield 'No More Questions'
