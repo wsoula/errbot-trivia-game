@@ -26,7 +26,8 @@ class GuessFlows(BotFlow):
         one_guess = question.connect('guess')
         # Don't connect guess back to itself, what is the next guess???
         # one_guess.connect(one_guess, predicate=lambda ctx: ctx['correct'] is False and 'ended' not in ctx)
-        one_guess.connect(question, predicate=lambda ctx: (ctx['correct'] is True and 'ended' not in ctx))
+        # one_guess.connect(question, predicate=lambda ctx: (ctx['correct'] is True and 'ended' not in ctx))
+        one_guess.connect(question, predicate=lambda ctx: 'correct' in ctx)
         one_guess.connect(FLOW_END, predicate=lambda ctx: 'ended' in ctx)
         game_created.hints = False
         question.hints = False
@@ -57,7 +58,7 @@ class TriviaGame(BotPlugin):
         """ Get a question """
         logger.info('question: msg.ctx=%s\nargs=%s', msg.ctx, args)
         if 'trivias' in msg.ctx:
-            msg.ctx['correct'] = False
+            del msg.ctx['correct']
             index = msg.ctx['index']
             if index + 1 == TOTAL_QUESTIONS:
                 yield 'No More Questions'
